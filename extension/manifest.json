@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Cursorful Core Replica",
+  "description": "Screen recorder with auto zoom, timeline editing, and local exports.",
+  "version": "0.1.0",
+  "permissions": ["tabs", "activeTab", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Cursorful Core Replica",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
