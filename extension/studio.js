@@ -63,6 +63,63 @@ function setStatus(message) {
   statusLabel.textContent = message;
 }
 
+function isFiniteDuration(value) {
+  return Number.isFinite(value) && value > 0;
+}
+
+function getSeekableEnd(videoElement) {
+  if (!videoElement?.seekable?.length) return 0;
+  const end = videoElement.seekable.end(videoElement.seekable.length - 1);
+  return isFiniteDuration(end) ? end : 0;
+}
+
+function seekVideo(videoElement, timeSec) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const timeoutId = setTimeout(finish, 1200);
+
+    function finish() {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      videoElement.removeEventListener("seeked", finish);
+      videoElement.removeEventListener("error", finish);
+      resolve();
+    }
+
+    videoElement.addEventListener("seeked", finish);
+    videoElement.addEventListener("error", finish);
+
+    try {
+      videoElement.currentTime = timeSec;
+    } catch {
+      finish();
+    }
+  });
+}
+
+async function resolveFiniteVideoDuration(videoElement) {
+  if (isFiniteDuration(videoElement.duration)) {
+    return videoElement.duration;
+  }
+
+  const seekableEnd = getSeekableEnd(videoElement);
+  if (seekableEnd) {
+    return seekableEnd;
+  }
+
+  await seekVideo(videoElement, Number.MAX_SAFE_INTEGER);
+
+  if (isFiniteDuration(videoElement.duration)) {
+    await seekVideo(videoElement, 0);
+    return videoElement.duration;
+  }
+
+  const probedDuration = isFiniteDuration(videoElement.currentTime) ? videoElement.currentTime : 0;
+  await seekVideo(videoElement, 0);
+  return probedDuration;
+}
+
 function getSupportedMimeType() {
   const candidates = [
     "video/webm;codecs=vp9,opus",
@@ -361,11 +418,12 @@ async function finalizeRecording() {
   sourceVideo.src = state.sourceUrl;
   sourceVideo.load();
   await attachVideoMetadata(sourceVideo);
+  const resolvedDuration = await resolveFiniteVideoDuration(sourceVideo);
 
   state.sourceMeta = {
     width: sourceVideo.videoWidth || 1,
     height: sourceVideo.videoHeight || 1,
-    duration: sourceVideo.duration || 0
+    duration: resolvedDuration
   };
 
   seekBar.min = "0";
@@ -476,127 +534,135 @@ async function exportVideo() {
   if (!state.sourceUrl || !state.sourceMeta.duration) return;
   exportButton.disabled = true;
   setStatus("本地离线导出中...");
+  try {
+    const mode = aspectSelect.value;
+    const output = getOutputSize(mode, state.sourceMeta.width, state.sourceMeta.height, 1280);
+    const canvas = document.createElement("canvas");
+    canvas.width = output.width;
+    canvas.height = output.height;
+    const ctx = canvas.getContext("2d");
 
-  const mode = aspectSelect.value;
-  const output = getOutputSize(mode, state.sourceMeta.width, state.sourceMeta.height, 1280);
-  const canvas = document.createElement("canvas");
-  canvas.width = output.width;
-  canvas.height = output.height;
-  const ctx = canvas.getContext("2d");
+    const tempVideo = document.createElement("video");
+    tempVideo.src = state.sourceUrl;
+    tempVideo.muted = true;
+    tempVideo.playsInline = true;
+    tempVideo.crossOrigin = "anonymous";
+    await attachVideoMetadata(tempVideo);
+    const exportDuration = await resolveFiniteVideoDuration(tempVideo);
+    if (!exportDuration) {
+      throw new Error("无法解析录制视频时长");
+    }
 
-  const tempVideo = document.createElement("video");
-  tempVideo.src = state.sourceUrl;
-  tempVideo.muted = true;
-  tempVideo.playsInline = true;
-  tempVideo.crossOrigin = "anonymous";
-  await attachVideoMetadata(tempVideo);
+    const mimeType = getSupportedMimeType();
+    const stream = canvas.captureStream(30);
+    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    const chunks = [];
 
-  const mimeType = getSupportedMimeType();
-  const stream = canvas.captureStream(30);
-  const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-  const chunks = [];
-
-  recorder.ondataavailable = (event) => {
-    if (event.data.size > 0) chunks.push(event.data);
-  };
-
-  const done = new Promise((resolve) => {
-    recorder.onstop = () => {
-      resolve(new Blob(chunks, { type: recorder.mimeType || "video/webm" }));
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) chunks.push(event.data);
     };
-  });
 
-  recorder.start(200);
-  await tempVideo.play();
+    const done = new Promise((resolve) => {
+      recorder.onstop = () => {
+        resolve(new Blob(chunks, { type: recorder.mimeType || "video/webm" }));
+      };
+    });
 
-  await new Promise((resolve) => {
-    const tick = () => {
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const showFrame = frameToggle.checked;
-      const padding = showFrame ? 24 : 0;
+    recorder.start(200);
+    await tempVideo.play();
 
-      if (state.background.mode === "none") {
-        ctx.fillStyle = "#030712";
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-      } else if (state.background.mode === "color") {
-        ctx.fillStyle = state.background.color;
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-      } else if (state.background.mode === "gradient") {
-        const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-        gradient.addColorStop(0, state.background.gradientA);
-        gradient.addColorStop(1, state.background.gradientB);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-      } else if (state.background.mode === "image" && state.background.image) {
-        ctx.drawImage(state.background.image, 0, 0, canvasWidth, canvasHeight);
-      } else {
-        ctx.fillStyle = "#030712";
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-      }
+    await new Promise((resolve) => {
+      const tick = () => {
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const showFrame = frameToggle.checked;
+        const padding = showFrame ? 24 : 0;
 
-      const contain = computeContainRect(
-        state.sourceMeta.width,
-        state.sourceMeta.height,
-        canvasWidth,
-        canvasHeight,
-        padding
-      );
+        if (state.background.mode === "none") {
+          ctx.fillStyle = "#030712";
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        } else if (state.background.mode === "color") {
+          ctx.fillStyle = state.background.color;
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        } else if (state.background.mode === "gradient") {
+          const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+          gradient.addColorStop(0, state.background.gradientA);
+          gradient.addColorStop(1, state.background.gradientB);
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        } else if (state.background.mode === "image" && state.background.image) {
+          ctx.drawImage(state.background.image, 0, 0, canvasWidth, canvasHeight);
+        } else {
+          ctx.fillStyle = "#030712";
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        }
 
-      if (showFrame) {
-        ctx.save();
-        ctx.fillStyle = "#f8fafc";
-        ctx.shadowColor = "rgba(15, 23, 42, 0.45)";
-        ctx.shadowBlur = 18;
-        drawRoundedRect(ctx, contain.x - 10, contain.y - 10, contain.width + 20, contain.height + 20, 16);
-        ctx.fill();
-        ctx.restore();
-      }
+        const contain = computeContainRect(
+          state.sourceMeta.width,
+          state.sourceMeta.height,
+          canvasWidth,
+          canvasHeight,
+          padding
+        );
 
-      const zoom = getZoomStateAtTime(
-        tempVideo.currentTime,
-        state.zoomEvents,
-        state.interactions.cursor,
-        state.interactions.viewport
-      );
+        if (showFrame) {
+          ctx.save();
+          ctx.fillStyle = "#f8fafc";
+          ctx.shadowColor = "rgba(15, 23, 42, 0.45)";
+          ctx.shadowBlur = 18;
+          drawRoundedRect(ctx, contain.x - 10, contain.y - 10, contain.width + 20, contain.height + 20, 16);
+          ctx.fill();
+          ctx.restore();
+        }
 
-      let sx = 0;
-      let sy = 0;
-      let sw = state.sourceMeta.width;
-      let sh = state.sourceMeta.height;
+        const zoom = getZoomStateAtTime(
+          tempVideo.currentTime,
+          state.zoomEvents,
+          state.interactions.cursor,
+          state.interactions.viewport
+        );
 
-      if (zoom) {
-        sw = state.sourceMeta.width / zoom.scale;
-        sh = state.sourceMeta.height / zoom.scale;
-        sx = clamp(zoom.x * state.sourceMeta.width - sw / 2, 0, state.sourceMeta.width - sw);
-        sy = clamp(zoom.y * state.sourceMeta.height - sh / 2, 0, state.sourceMeta.height - sh);
-      }
+        let sx = 0;
+        let sy = 0;
+        let sw = state.sourceMeta.width;
+        let sh = state.sourceMeta.height;
 
-      ctx.drawImage(tempVideo, sx, sy, sw, sh, contain.x, contain.y, contain.width, contain.height);
+        if (zoom) {
+          sw = state.sourceMeta.width / zoom.scale;
+          sh = state.sourceMeta.height / zoom.scale;
+          sx = clamp(zoom.x * state.sourceMeta.width - sw / 2, 0, state.sourceMeta.width - sw);
+          sy = clamp(zoom.y * state.sourceMeta.height - sh / 2, 0, state.sourceMeta.height - sh);
+        }
 
-      if (!tempVideo.ended) {
-        requestAnimationFrame(tick);
-      } else {
-        resolve();
-      }
-    };
-    tick();
-  });
+        ctx.drawImage(tempVideo, sx, sy, sw, sh, contain.x, contain.y, contain.width, contain.height);
 
-  recorder.stop();
-  stream.getTracks().forEach((track) => track.stop());
-  const exportedBlob = await done;
+        if (!tempVideo.ended && tempVideo.currentTime < exportDuration - 1 / 30) {
+          requestAnimationFrame(tick);
+        } else {
+          resolve();
+        }
+      };
+      tick();
+    });
 
-  const previousHref = downloadLink.getAttribute("href");
-  if (previousHref?.startsWith("blob:")) {
-    URL.revokeObjectURL(previousHref);
+    recorder.stop();
+    stream.getTracks().forEach((track) => track.stop());
+    const exportedBlob = await done;
+
+    const previousHref = downloadLink.getAttribute("href");
+    if (previousHref?.startsWith("blob:")) {
+      URL.revokeObjectURL(previousHref);
+    }
+
+    downloadLink.href = URL.createObjectURL(exportedBlob);
+    downloadLink.classList.remove("hidden");
+    downloadLink.textContent = `下载导出结果（${(exportedBlob.size / 1024 / 1024).toFixed(1)} MB）`;
+    setStatus("本地离线导出完成");
+  } catch (error) {
+    setStatus(`导出失败：${error.message}`);
+  } finally {
+    exportButton.disabled = false;
   }
-
-  downloadLink.href = URL.createObjectURL(exportedBlob);
-  downloadLink.classList.remove("hidden");
-  downloadLink.textContent = `下载导出结果（${(exportedBlob.size / 1024 / 1024).toFixed(1)} MB）`;
-  setStatus("本地离线导出完成");
-  exportButton.disabled = false;
 }
 
 function wireUiEvents() {
