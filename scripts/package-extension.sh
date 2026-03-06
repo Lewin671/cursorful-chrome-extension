@@ -29,9 +29,11 @@ const safeName = (manifest.name || "chrome-extension")
 process.stdout.write(`${manifest.version}\n${safeName}`);
 ' "$MANIFEST_PATH")"
 
-mapfile -t MANIFEST_LINES <<< "$MANIFEST_INFO"
-VERSION="${MANIFEST_LINES[0]:-}"
-SAFE_NAME="${MANIFEST_LINES[1]:-chrome-extension}"
+VERSION=$(echo "$MANIFEST_INFO" | head -n 1)
+SAFE_NAME=$(echo "$MANIFEST_INFO" | tail -n +2)
+if [ -z "$SAFE_NAME" ]; then
+  SAFE_NAME="chrome-extension"
+fi
 
 if [[ -z "$VERSION" ]]; then
   echo "Error: failed to read version from manifest." >&2
