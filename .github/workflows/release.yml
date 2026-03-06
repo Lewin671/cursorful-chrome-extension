@@ -1,0 +1,58 @@
+name: Release package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate tag matches manifest version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MANIFEST_VERSION="$(node -p "JSON.parse(require('node:fs').readFileSync('extension/manifest.json','utf8')).version")"
+          if [ "$TAG_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "Tag version ($TAG_VERSION) does not match extension/manifest.json version ($MANIFEST_VERSION)."
+            exit 1
+          fi
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build release package
+        run: npm run package
+
+      - name: Locate zip package
+        id: package
+        run: |
+          ZIP_PATH="$(ls -1 dist/*.zip | head -n 1)"
+          if [ -z "$ZIP_PATH" ]; then
+            echo "No zip package generated in dist/."
+            exit 1
+          fi
+          echo "zip_path=$ZIP_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: ${{ steps.package.outputs.zip_path }}
