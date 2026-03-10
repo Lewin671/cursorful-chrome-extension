@@ -32,11 +32,16 @@ jobs:
       - name: Build release package
         run: npm run package
 
+      - name: Get package filename
+        if: github.event_name == 'push'
+        id: get-filename
+        run: echo "filename=$(ls dist/*.zip | xargs -n1 basename)" >> $GITHUB_OUTPUT
+
       - name: Upload preview artifact
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
-          name: preview-package
+          name: ${{ steps.get-filename.outputs.filename }}
           path: dist/*.zip
           retention-days: 30
 
