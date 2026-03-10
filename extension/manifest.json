@@ -1,18 +1,28 @@
 {
   "manifest_version": 3,
-  "name": "Cursorful Core Replica",
-  "description": "Screen recorder with auto zoom, timeline editing, and local exports.",
-  "version": "0.1.0",
-  "permissions": ["tabs", "activeTab", "scripting"],
-  "host_permissions": ["<all_urls>"],
+  "name": "Cursorful",
+  "description": "极简屏幕录制器：一键录屏、自动追踪鼠标，录制完成直接下载。",
+  "version": "0.2.0",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "action": {
-    "default_title": "Cursorful Core Replica",
+    "default_title": "Cursorful 录制器",
     "default_popup": "popup.html"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ]

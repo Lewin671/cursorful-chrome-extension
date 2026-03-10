@@ -1,82 +1,89 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cursorful Core Replica Studio</title>
-    <link rel="stylesheet" href="studio.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <h1>Cursorful Core Replica Studio</h1>
-      <div class="row">
-        <button id="startRecording">开始录制</button>
-        <button id="stopRecording" disabled>停止录制</button>
-        <span id="recordingStatus">未录制</span>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursorful · 录制工作台</title>
+  <link rel="stylesheet" href="studio.css" />
+</head>
+
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-icon">⏺</span>
+      <span class="brand-name">Cursorful</span>
+    </div>
+    <div class="topbar-controls">
+      <span id="recordingStatus" class="status-badge status-idle">就绪</span>
+      <button id="startRecording" class="btn btn-record">
+        <span class="btn-icon">▶</span> 开始录制
+      </button>
+      <button id="stopRecording" class="btn btn-stop" disabled>
+        <span class="btn-icon">⏹</span> 停止录制
+      </button>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="main">
+
+    <!-- 空状态：录制前 -->
+    <section id="emptyState" class="empty-state">
+      <div class="empty-icon">🎬</div>
+      <h2>准备录制</h2>
+      <p>点击"开始录制"，选择屏幕或标签页，自动追踪鼠标轨迹。</p>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <span>点击 <strong>开始录制</strong></span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <span>选择屏幕 / 标签页</span>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span>停止后 <strong>直接下载</strong></span>
+        </div>
       </div>
-    </header>
+    </section>
 
-    <main class="layout">
-      <section class="panel preview">
-        <h2>预览</h2>
-        <canvas id="previewCanvas" width="960" height="540"></canvas>
-        <div class="row">
-          <button id="playPreview" disabled>播放预览</button>
-          <button id="pausePreview" disabled>暂停</button>
-          <label>
-            时间
-            <input id="seekBar" type="range" min="0" max="0" value="0" step="0.01" />
-          </label>
-        </div>
-        <div class="row">
-          <label>
-            比例
-            <select id="aspectRatio">
-              <option value="original">原比例</option>
-              <option value="16:9">16:9</option>
-              <option value="9:16">9:16</option>
-              <option value="1:1">1:1</option>
-            </select>
-          </label>
-          <label>
-            <input id="showBrowserFrame" type="checkbox" checked />
-            显示浏览器边框
-          </label>
-        </div>
-        <div class="row">
-          <button id="exportVideo" disabled>导出本地视频</button>
-          <a id="downloadLink" class="hidden" download="cursorful-core-export.webm">下载导出结果</a>
-        </div>
-      </section>
+    <!-- 录制中状态 -->
+    <section id="recordingState" class="recording-state hidden">
+      <div class="rec-indicator">
+        <span class="rec-dot"></span>
+        <span class="rec-label">REC</span>
+      </div>
+      <div class="rec-timer" id="recTimer">00:00</div>
+      <p class="rec-hint">录制进行中，点击"停止录制"完成。</p>
+    </section>
 
-      <section class="panel controls">
-        <h2>自动缩放时间线</h2>
-        <p id="timelineHint">录制后会根据点击自动生成缩放片段，可在此编辑。</p>
-        <button id="addZoomEvent" disabled>添加缩放片段</button>
-        <div id="timelineList"></div>
+    <!-- 预览区：录制完成后 -->
+    <section id="previewState" class="preview-state hidden">
+      <div class="preview-header">
+        <h2>录制完成</h2>
+        <div class="preview-meta" id="previewMeta"></div>
+      </div>
+      <div class="video-container">
+        <video id="previewVideo" controls playsinline></video>
+      </div>
+      <div class="preview-actions">
+        <button id="downloadBtn" class="btn btn-download">
+          <span class="btn-icon">⬇</span> 下载录制文件
+        </button>
+        <button id="reRecordBtn" class="btn btn-secondary">
+          <span class="btn-icon">↺</span> 重新录制
+        </button>
+      </div>
+    </section>
 
-        <h2>背景</h2>
-        <div class="background-grid">
-          <label><input type="radio" name="backgroundMode" value="none" checked /> 无背景</label>
-          <label><input type="radio" name="backgroundMode" value="color" /> 纯色</label>
-          <label><input type="radio" name="backgroundMode" value="gradient" /> 渐变</label>
-          <label><input type="radio" name="backgroundMode" value="image" /> 图片</label>
-        </div>
-        <div class="row">
-          <label>纯色 <input id="bgColor" type="color" value="#111827" /></label>
-          <label>渐变 A <input id="bgGradientA" type="color" value="#1d4ed8" /></label>
-          <label>渐变 B <input id="bgGradientB" type="color" value="#9333ea" /></label>
-        </div>
-        <div class="row">
-          <label>
-            背景图片
-            <input id="bgImage" type="file" accept="image/*" />
-          </label>
-        </div>
-      </section>
-    </main>
+  </main>
 
-    <video id="sourceVideo" class="hidden" crossorigin="anonymous"></video>
-    <script type="module" src="studio.js"></script>
-  </body>
+  <script type="module" src="studio.js"></script>
+</body>
+
 </html>
