@@ -17,6 +17,7 @@ const btnResume = document.querySelector('#btnResume');
 const btnStopFromPause = document.querySelector('#btnStopFromPause');
 const btnDownload = document.querySelector('#btnDownload');
 const btnReRecord = document.querySelector('#btnReRecord');
+const btnExpand = document.querySelector('#btnExpand');
 
 // Dots in each view's top bar (for live state color)
 const dotIdle = stateIdle?.querySelector('.logo-dot');
@@ -263,6 +264,11 @@ btnResume.addEventListener('click', resumeRecording);
 btnStopFromPause.addEventListener('click', stopRecording);
 btnDownload.addEventListener('click', download);
 btnReRecord.addEventListener('click', reset);
+btnExpand.addEventListener('click', () => {
+    if (rec.sourceBlobUrl) {
+        chrome.tabs.create({ url: rec.sourceBlobUrl });
+    }
+});
 window.addEventListener('beforeunload', freeUrl);
 
 // ── Boot ──────────────────────────────────────────────────────────────────────

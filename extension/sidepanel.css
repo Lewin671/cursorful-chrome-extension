@@ -461,12 +461,42 @@ body {
 }
 
 .video-card {
+    position: relative;
     width: 100%;
     border-radius: var(--r);
     overflow: hidden;
     background: #000;
     border: 1px solid var(--border);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+.expand-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 1;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.expand-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.05);
+}
+
+.expand-btn:active {
+    transform: scale(0.95);
 }
 
 .video-card video {
