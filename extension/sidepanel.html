@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cursorful</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="sidepanel.css" />
+</head>
+
+<body>
+
+    <!-- ── 状态一：就绪 ── -->
+    <div id="stateIdle" class="view view-idle">
+        <!-- 顶部品牌栏 -->
+        <div class="top-bar">
+            <div class="logo">
+                <span class="logo-dot"></span>
+                <span class="logo-text">Cursorful</span>
+            </div>
+            <span class="chip chip-idle">就绪</span>
+        </div>
+
+        <!-- 中央区域 -->
+        <div class="hero">
+            <div class="pulse-ring">
+                <button id="btnStart" class="record-btn" title="开始录制">
+                    <span class="record-btn-inner"></span>
+                </button>
+            </div>
+            <h1>点击开始录制</h1>
+            <p>选择屏幕或标签页，自动追踪鼠标轨迹</p>
+        </div>
+
+        <!-- 步骤提示 -->
+        <div class="steps-bar">
+            <div class="step-item">
+                <span class="step-ico">①</span>
+                <span>点击按钮</span>
+            </div>
+            <div class="step-sep">→</div>
+            <div class="step-item">
+                <span class="step-ico">②</span>
+                <span>选择屏幕</span>
+            </div>
+            <div class="step-sep">→</div>
+            <div class="step-item">
+                <span class="step-ico">③</span>
+                <span>直接下载</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 状态二：录制中 ── -->
+    <div id="stateRecording" class="view view-recording hidden">
+        <div class="top-bar">
+            <div class="logo">
+                <span class="logo-dot recording"></span>
+                <span class="logo-text">Cursorful</span>
+            </div>
+            <span class="chip chip-rec">
+                <span class="chip-blink"></span>REC
+            </span>
+        </div>
+
+        <div class="rec-center">
+            <div class="timer-wrap">
+                <span class="timer-label">录制时长</span>
+                <div class="timer" id="recTime">00:00</div>
+                <div class="timer-sub" id="recHint">录制进行中</div>
+            </div>
+
+            <div class="ctrl-row">
+                <button id="btnPause" class="ctrl-btn ctrl-pause">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="5" y="4" width="4" height="16" rx="1.5" />
+                        <rect x="15" y="4" width="4" height="16" rx="1.5" />
+                    </svg>
+                    <span>暂停</span>
+                </button>
+                <button id="btnStop" class="ctrl-btn ctrl-stop">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                    </svg>
+                    <span>停止</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 状态三：已暂停 ── -->
+    <div id="statePaused" class="view view-paused hidden">
+        <div class="top-bar">
+            <div class="logo">
+                <span class="logo-dot paused"></span>
+                <span class="logo-text">Cursorful</span>
+            </div>
+            <span class="chip chip-paused">已暂停</span>
+        </div>
+
+        <div class="rec-center">
+            <div class="timer-wrap">
+                <span class="timer-label">已录制</span>
+                <div class="timer timer-dim" id="pauseTime">00:00</div>
+                <div class="timer-sub">录制已暂停</div>
+            </div>
+
+            <div class="ctrl-row">
+                <button id="btnResume" class="ctrl-btn ctrl-resume">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5.14v14l11-7-11-7z" />
+                    </svg>
+                    <span>继续</span>
+                </button>
+                <button id="btnStopFromPause" class="ctrl-btn ctrl-stop">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                    </svg>
+                    <span>停止</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 状态四：完成 ── -->
+    <div id="stateDone" class="view view-done hidden">
+        <div class="top-bar">
+            <div class="logo">
+                <span class="logo-dot done"></span>
+                <span class="logo-text">Cursorful</span>
+            </div>
+            <span class="chip chip-done">完成</span>
+        </div>
+
+        <div class="done-body">
+            <div class="done-meta-row">
+                <span class="done-check">✓</span>
+                <div>
+                    <div class="done-title">录制完成</div>
+                    <div class="done-meta" id="doneMeta">—</div>
+                </div>
+            </div>
+
+            <div class="video-card">
+                <video id="previewVideo" controls playsinline></video>
+            </div>
+
+            <button id="btnDownload" class="action-btn action-download">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                下载视频
+            </button>
+
+            <button id="btnReRecord" class="action-btn action-ghost">
+                重新录制
+            </button>
+        </div>
+    </div>
+
+    <script type="module" src="sidepanel.js"></script>
+</body>
+
+</html>

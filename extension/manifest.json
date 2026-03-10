@@ -1,19 +1,25 @@
 {
   "manifest_version": 3,
   "name": "Cursorful",
-  "description": "极简屏幕录制器：一键录屏、自动追踪鼠标，录制完成直接下载。",
-  "version": "0.2.0",
+  "description": "极简屏幕录制器：点击图标即可开始/暂停/停止录制，录制完成直接下载。",
+  "version": "0.3.0",
   "permissions": [
     "tabs",
     "activeTab",
-    "scripting"
+    "scripting",
+    "sidePanel"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
   "action": {
-    "default_title": "Cursorful 录制器",
-    "default_popup": "popup.html"
+    "default_title": "Cursorful 录制器"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {

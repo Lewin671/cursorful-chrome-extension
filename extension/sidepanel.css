@@ -1,0 +1,517 @@
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #0a0c14;
+    --surface: #111520;
+    --surface2: #181d2e;
+    --border: rgba(255, 255, 255, 0.07);
+    --text: #f0f2ff;
+    --muted: #5a6488;
+    --muted2: #8890b5;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --red: #f43f5e;
+    --red2: #fb923c;
+    --amber: #f59e0b;
+    --green: #10b981;
+    --r: 12px;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ── View containers ─────────────────────────────────────────────────────────── */
+.view {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ── Top bar ─────────────────────────────────────────────────────────────────── */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10, 12, 20, 0.7);
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.logo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.3s, box-shadow 0.3s;
+    flex-shrink: 0;
+}
+
+.logo-dot.recording {
+    background: var(--red);
+    box-shadow: 0 0 10px var(--red);
+    animation: dot-blink 1.1s ease-in-out infinite;
+}
+
+.logo-dot.paused {
+    background: var(--amber);
+    box-shadow: 0 0 8px var(--amber);
+}
+
+.logo-dot.done {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+}
+
+@keyframes dot-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.logo-text {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    background: linear-gradient(110deg, #c4b5fd 0%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Chips ─────────────────────────────────────────────────────────────────── */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.chip-idle {
+    background: var(--surface2);
+    color: var(--muted2);
+    border: 1px solid var(--border);
+}
+
+.chip-rec {
+    background: rgba(244, 63, 94, .15);
+    color: var(--red);
+    border: 1px solid rgba(244, 63, 94, .3);
+}
+
+.chip-paused {
+    background: rgba(245, 158, 11, .12);
+    color: var(--amber);
+    border: 1px solid rgba(245, 158, 11, .25);
+}
+
+.chip-done {
+    background: rgba(16, 185, 129, .12);
+    color: var(--green);
+    border: 1px solid rgba(16, 185, 129, .25);
+}
+
+.chip-blink {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    animation: dot-blink 1s step-end infinite;
+}
+
+/* ═════════════════════════════════════════════
+   IDLE VIEW
+═══════════════════════════════════════════════ */
+.view-idle {
+    background:
+        radial-gradient(ellipse 80% 60% at 50% 110%, rgba(124, 58, 237, 0.18) 0%, transparent 70%),
+        var(--bg);
+}
+
+.hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 24px;
+}
+
+.hero h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+}
+
+.hero p {
+    font-size: 13px;
+    color: var(--muted2);
+    text-align: center;
+    max-width: 220px;
+}
+
+/* ── Pulse ring around record button ── */
+.pulse-ring {
+    position: relative;
+    width: 104px;
+    height: 104px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pulse-ring::before,
+.pulse-ring::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(244, 63, 94, 0.4);
+    animation: ring-expand 2.4s ease-out infinite;
+}
+
+.pulse-ring::after {
+    animation-delay: 1.2s;
+}
+
+@keyframes ring-expand {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1.55);
+        opacity: 0;
+    }
+}
+
+/* ── The red record button ── */
+.record-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background: conic-gradient(from 180deg, var(--red) 0%, var(--red2) 100%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 0 0 3px rgba(244, 63, 94, 0.2),
+        0 8px 32px rgba(244, 63, 94, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.record-btn:hover {
+    transform: scale(1.06);
+    box-shadow:
+        0 0 0 4px rgba(244, 63, 94, 0.3),
+        0 12px 40px rgba(244, 63, 94, 0.55);
+}
+
+.record-btn:active {
+    transform: scale(0.97);
+}
+
+/* Inner circle (white dot) to mimic real record button */
+.record-btn-inner {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Steps ─────────────────────────────────────────────────────────────────── */
+.steps-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 20px 24px;
+    flex-shrink: 0;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted2);
+}
+
+.step-ico {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.step-sep {
+    color: var(--border);
+    font-size: 14px;
+}
+
+/* ═════════════════════════════════════════════
+   RECORDING & PAUSED VIEWS
+═══════════════════════════════════════════════ */
+.view-recording {
+    background:
+        radial-gradient(ellipse 90% 55% at 50% 100%, rgba(244, 63, 94, 0.12) 0%, transparent 65%),
+        var(--bg);
+}
+
+.view-paused {
+    background:
+        radial-gradient(ellipse 90% 55% at 50% 100%, rgba(245, 158, 11, 0.1) 0%, transparent 65%),
+        var(--bg);
+}
+
+.rec-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+    padding: 24px;
+}
+
+.timer-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.timer-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.timer {
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -3px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    line-height: 1;
+}
+
+.timer-dim {
+    color: var(--muted2);
+}
+
+.timer-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* ── Two control buttons ── */
+.ctrl-row {
+    display: flex;
+    gap: 14px;
+}
+
+.ctrl-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 88px;
+    padding: 16px 12px;
+    border: none;
+    border-radius: 18px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.14s, filter 0.15s;
+    color: #fff;
+}
+
+.ctrl-btn:hover {
+    filter: brightness(1.15);
+    transform: translateY(-2px);
+}
+
+.ctrl-btn:active {
+    transform: translateY(0);
+    filter: brightness(0.92);
+}
+
+.ctrl-pause {
+    background: var(--surface2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text);
+}
+
+.ctrl-stop {
+    background: linear-gradient(145deg, var(--red), #c2185b);
+    box-shadow: 0 4px 18px rgba(244, 63, 94, 0.35);
+}
+
+.ctrl-resume {
+    background: linear-gradient(145deg, var(--accent), var(--accent2));
+    box-shadow: 0 4px 18px rgba(124, 58, 237, 0.35);
+}
+
+/* ═════════════════════════════════════════════
+   DONE VIEW
+═══════════════════════════════════════════════ */
+.view-done {
+    background:
+        radial-gradient(ellipse 80% 40% at 50% 100%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
+        var(--bg);
+}
+
+.done-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 18px 24px;
+    overflow-y: auto;
+}
+
+.done-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    align-self: flex-start;
+    width: 100%;
+}
+
+.done-check {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--green);
+    flex-shrink: 0;
+    font-style: normal;
+}
+
+.done-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.done-meta {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-top: 2px;
+}
+
+.video-card {
+    width: 100%;
+    border-radius: var(--r);
+    overflow: hidden;
+    background: #000;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+.video-card video {
+    display: block;
+    width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+}
+
+/* ── Action buttons ── */
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: var(--r);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.14s, filter 0.15s;
+}
+
+.action-btn:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}
+
+.action-download {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+}
+
+.action-ghost {
+    background: transparent;
+    color: var(--muted2);
+    border: 1px solid var(--border);
+    font-weight: 500;
+    font-size: 13px;
+}
