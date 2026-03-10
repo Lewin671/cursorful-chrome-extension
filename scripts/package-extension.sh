@@ -35,14 +35,13 @@ if [ -z "$SAFE_NAME" ]; then
   SAFE_NAME="chrome-extension"
 fi
 
-if [[ -z "$VERSION" ]]; then
-  echo "Error: failed to read version from manifest." >&2
-  exit 1
+mkdir -p "$DIST_DIR"
+# Only clean old zip files in CI environment to avoid space issues
+if [[ "${CI:-}" == "true" ]]; then
+  rm -f "$DIST_DIR"/*.zip
 fi
 
-mkdir -p "$DIST_DIR"
 ZIP_PATH="$DIST_DIR/${SAFE_NAME}-v${VERSION}.zip"
-rm -f "$ZIP_PATH"
 
 TMP_DIR="$(mktemp -d)"
 cleanup() {
