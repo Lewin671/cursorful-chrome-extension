@@ -461,11 +461,52 @@ async function startRecording() {
   const trackingStarted = await startTrackingOnTargetTab();
 
   try {
+    // 获取真实的物理屏幕分辨率
+    const getPhysicalResolution = () => {
+      // 方法1: 使用devicePixelRatio计算物理分辨率
+      const logicalWidth = window.screen.width;
+      const logicalHeight = window.screen.height;
+      const pixelRatio = window.devicePixelRatio || 1;
+      const physicalWidth = Math.round(logicalWidth * pixelRatio);
+      const physicalHeight = Math.round(logicalHeight * pixelRatio);
+      
+      console.log(`逻辑分辨率: ${logicalWidth}x${logicalHeight}`);
+      console.log(`设备像素比: ${pixelRatio}`);
+      console.log(`计算出的物理分辨率: ${physicalWidth}x${physicalHeight}`);
+      
+      // 方法2: 尝试从屏幕对象获取更多信息
+      const availWidth = window.screen.availWidth;
+      const availHeight = window.screen.availHeight;
+      console.log(`可用区域: ${availWidth}x${availHeight}`);
+      
+      // 返回计算出的物理分辨率
+      return { width: physicalWidth, height: physicalHeight };
+    };
+    
+    const { width: screenWidth, height: screenHeight } = getPhysicalResolution();
+    
+    console.log(`目标录制分辨率: ${screenWidth}x${screenHeight}`);
+    
     state.mediaStream = await navigator.mediaDevices.getDisplayMedia({
-      video: { frameRate: 30 },
+      video: {
+        frameRate: 60,
+        // 使用物理分辨率
+        width: { max: screenWidth, ideal: screenWidth },
+        height: { max: screenHeight, ideal: screenHeight },
+        resizeMode: 'none'
+      },
       audio: true
     });
+    
+    // 检查实际获取的视频轨道分辨率
+    const videoTrack = state.mediaStream.getVideoTracks()[0];
+    const settings = videoTrack.getSettings();
+    console.log('实际视频分辨率:', `${settings.width}x${settings.height}`);
+    console.log('实际帧率:', settings.frameRate);
+    console.log('所有设置:', settings);
+    
   } catch (error) {
+    console.error('getDisplayMedia错误:', error);
     setStatus(`录制启动失败：${error.message}`);
     return;
   }
@@ -536,7 +577,9 @@ async function exportVideo() {
   setStatus("本地离线导出中...");
   try {
     const mode = aspectSelect.value;
-    const output = getOutputSize(mode, state.sourceMeta.width, state.sourceMeta.height, 1280);
+    // 使用原始分辨率作为最大长边，保持电脑的原始清晰度
+    const maxLongEdge = Math.max(state.sourceMeta.width, state.sourceMeta.height);
+    const output = getOutputSize(mode, state.sourceMeta.width, state.sourceMeta.height, maxLongEdge);
     const canvas = document.createElement("canvas");
     canvas.width = output.width;
     canvas.height = output.height;
@@ -554,7 +597,7 @@ async function exportVideo() {
     }
 
     const mimeType = getSupportedMimeType();
-    const stream = canvas.captureStream(30);
+    const stream = canvas.captureStream(60);
     const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
     const chunks = [];
 
@@ -636,7 +679,7 @@ async function exportVideo() {
 
         ctx.drawImage(tempVideo, sx, sy, sw, sh, contain.x, contain.y, contain.width, contain.height);
 
-        if (!tempVideo.ended && tempVideo.currentTime < exportDuration - 1 / 30) {
+        if (!tempVideo.ended && tempVideo.currentTime < exportDuration - 1 / 60) {
           requestAnimationFrame(tick);
         } else {
           resolve();
