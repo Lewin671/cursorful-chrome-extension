@@ -20,11 +20,19 @@
       <button id="startRecording" class="btn btn-record">
         <span class="btn-icon">▶</span> 开始录制
       </button>
+      <button id="pauseRecording" class="btn btn-secondary hidden" disabled>
+        <span class="btn-icon">⏸</span> 暂停
+      </button>
+      <button id="resumeRecording" class="btn btn-record hidden" disabled>
+        <span class="btn-icon">▶</span> 继续
+      </button>
       <button id="stopRecording" class="btn btn-stop" disabled>
         <span class="btn-icon">⏹</span> 停止录制
       </button>
     </div>
   </header>
+
+  <div id="statusBanner" class="status-banner hidden"></div>
 
   <!-- 主内容区 -->
   <main class="main">
@@ -59,7 +67,25 @@
         <span class="rec-label">REC</span>
       </div>
       <div class="rec-timer" id="recTimer">00:00</div>
-      <p class="rec-hint">录制进行中，点击"停止录制"完成。</p>
+      <p class="rec-hint" id="recHint">录制进行中，点击“停止录制”完成。</p>
+    </section>
+
+    <section id="pausedState" class="recording-state hidden">
+      <div class="rec-indicator">
+        <span class="rec-dot rec-dot-paused"></span>
+        <span class="rec-label rec-label-paused">PAUSED</span>
+      </div>
+      <div class="rec-timer" id="pauseTimer">00:00</div>
+      <p class="rec-hint">录制已暂停，可继续或直接停止。</p>
+    </section>
+
+    <section id="processingState" class="recording-state hidden">
+      <div class="rec-indicator">
+        <span class="rec-dot rec-dot-processing"></span>
+        <span class="rec-label rec-label-processing">PROCESSING</span>
+      </div>
+      <div class="rec-timer rec-timer-processing">处理中</div>
+      <p class="rec-hint">正在整理录制结果并生成预览。</p>
     </section>
 
     <!-- 预览区：录制完成后 -->

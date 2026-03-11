@@ -17,6 +17,7 @@
   --accent: #7c3aed;
   --accent2: #0ea5e9;
   --danger: #ef4444;
+  --warning: #f59e0b;
   --success: #22c55e;
   --radius: 16px;
 }
@@ -117,6 +118,12 @@ body {
   background: rgba(34, 197, 94, 0.1);
 }
 
+.status-paused {
+  color: var(--warning);
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.1);
+}
+
 @keyframes blink-dot {
 
   0%,
@@ -198,6 +205,28 @@ body {
   max-width: 860px;
   margin: 0 auto;
   padding: 48px 28px 60px;
+}
+
+.status-banner {
+  margin: 14px auto 0;
+  max-width: 860px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.status-banner-error {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+.status-banner-warning {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
 }
 
 /* ── Empty state ── */
@@ -321,6 +350,26 @@ body {
   color: var(--danger);
 }
 
+.rec-dot-paused {
+  background: var(--warning);
+  box-shadow: 0 0 10px var(--warning);
+  animation: none;
+}
+
+.rec-label-paused {
+  color: var(--warning);
+}
+
+.rec-dot-processing {
+  background: var(--accent2);
+  box-shadow: 0 0 10px var(--accent2);
+  animation: rec-pulse 1.6s ease-in-out infinite;
+}
+
+.rec-label-processing {
+  color: var(--accent2);
+}
+
 .rec-timer {
   font-size: 72px;
   font-weight: 700;
@@ -328,6 +377,11 @@ body {
   color: var(--text);
   font-variant-numeric: tabular-nums;
   margin-bottom: 16px;
+}
+
+.rec-timer-processing {
+  font-size: 52px;
+  letter-spacing: -1px;
 }
 
 .rec-hint {

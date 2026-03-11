@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 const manifestPath = new URL("../extension/manifest.json", import.meta.url);
 const sidepanelJsPath = new URL("../extension/sidepanel.js", import.meta.url);
 const sidepanelHtmlPath = new URL("../extension/sidepanel.html", import.meta.url);
+const recorderControllerPath = new URL("../extension/src/recorder-controller.js", import.meta.url);
 
 test("manifest includes MV3 and side panel wiring", async () => {
   const raw = await readFile(manifestPath, "utf8");
@@ -16,12 +17,20 @@ test("manifest includes MV3 and side panel wiring", async () => {
   assert.ok(manifest.content_scripts.length > 0);
 });
 
-test("sidepanel implements core recording logic", async () => {
-  const source = await readFile(sidepanelJsPath, "utf8");
+test("shared recorder controller implements core recording logic", async () => {
+  const source = await readFile(recorderControllerPath, "utf8");
 
   assert.match(source, /getDisplayMedia/);
   assert.match(source, /new MediaRecorder/);
   assert.match(source, /chrome\.tabs\.sendMessage/);
+});
+
+test("sidepanel consumes the shared recorder controller", async () => {
+  const source = await readFile(sidepanelJsPath, "utf8");
+
+  assert.match(source, /createRecorderController/);
+  assert.match(source, /controller\.start/);
+  assert.match(source, /controller\.stop/);
 });
 
 test("sidepanel UI contains simple 3-step workflow controls", async () => {
@@ -32,4 +41,3 @@ test("sidepanel UI contains simple 3-step workflow controls", async () => {
   assert.match(html, /id="btnDownload"/);
   assert.match(html, /id="previewVideo"/);
 });
-

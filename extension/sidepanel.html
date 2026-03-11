@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <div id="statusBanner" class="status-banner hidden"></div>
 
     <!-- ── 状态一：就绪 ── -->
     <div id="stateIdle" class="view view-idle">
@@ -126,7 +127,26 @@
         </div>
     </div>
 
-    <!-- ── 状态四：完成 ── -->
+    <!-- ── 状态四：处理中 ── -->
+    <div id="stateProcessing" class="view view-processing hidden">
+        <div class="top-bar">
+            <div class="logo">
+                <span class="logo-dot processing"></span>
+                <span class="logo-text">Cursorful</span>
+            </div>
+            <span class="chip chip-processing">处理中</span>
+        </div>
+
+        <div class="rec-center">
+            <div class="timer-wrap">
+                <span class="timer-label">处理中</span>
+                <div class="timer timer-processing">整理中</div>
+                <div class="timer-sub">正在生成预览和录制结果</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 状态五：完成 ── -->
     <div id="stateDone" class="view view-done hidden">
         <div class="top-bar">
             <div class="logo">
