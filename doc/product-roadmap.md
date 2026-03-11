@@ -4,15 +4,15 @@
 
 Cursorful should not be positioned as a screen recorder plus editor.
 
-It should be positioned as an automatic presentation recorder:
+It should be positioned as a browser-first recorder for product demos and bug reproduction:
 
-- It helps users record demos, walkthroughs, and bug reproductions that already feel directed.
+- It helps users record software workflows that already feel directed.
 - It reduces the amount of manual post-processing needed after recording.
 - It produces source material that is either ready to share immediately or much easier to hand off to professional editors.
 
 In one sentence:
 
-> Cursorful is not meant to help users edit videos. It is meant to help them record clearer videos from the start.
+> Cursorful is not meant to help users edit videos. It is meant to help them record software workflows more clearly from the start.
 
 ## Target Users
 
@@ -38,6 +38,7 @@ In one sentence:
 - Do not compete on editing depth.
 - Compete on recording quality and presentation clarity.
 - Make the automatic focus system the core product differentiator.
+- Be opinionated about product demos and bug reproduction.
 - Optimize for "record once, share now" and "record once, edit less later."
 
 ## Product Boundary
@@ -67,15 +68,28 @@ That is a commodity.
 
 The real value is:
 
-- Users can explain something more clearly without learning video editing.
-- Teams can produce demos and bug reports that are easier to understand.
-- Professional creators can start from footage that already contains better focus and motion language.
+- Users can explain a software workflow more clearly without learning video editing.
+- Teams can produce product demos and bug reports that are easier to understand.
+- Professional creators can start from footage that already contains clearer focus cues and motion language.
+
+## Differentiation
+
+Cursorful should not try to win by being a general-purpose recorder.
+
+It should win by being better at software explanation.
+
+The differentiation is:
+
+- It is focused on product demos, walkthroughs, and bug reproduction rather than general recording.
+- It emphasizes the key action during capture instead of relying on post-production editing.
+- It is built around click intent, cursor movement, and focus guidance rather than generic recording controls.
+- It produces source material that is useful both for instant sharing and for professional downstream editing.
 
 ## Roadmap
 
-## Phase 1: Solid Recording Foundation
+## Phase 1: Reliable Capture
 
-Goal: make recording dependable enough that users trust the tool for real work.
+Goal: make software workflow recording dependable enough that users trust the tool for real demos and bug reports.
 
 Key outcomes:
 
@@ -92,9 +106,9 @@ Success signals:
 - High export success rate
 - Low abandonment during first-run recording
 
-## Phase 2: Auto-Director Core
+## Phase 2: Workflow Focus
 
-Goal: make recordings feel like they already have presentation direction.
+Goal: make product demos and bug reproductions easier to follow without manual editing.
 
 Key outcomes:
 
@@ -103,43 +117,45 @@ Key outcomes:
 - Smooth transitions between focus states
 - Click emphasis effects
 - Noise reduction for meaningless cursor motion
-- Multiple focus behavior presets such as conservative, balanced, and aggressive
+- Better focus logic for software workflows with clear action emphasis
 
 This is the product's core differentiator.
 
-Users should feel that the product is actively helping them "tell the story" of what is happening on screen.
+Users should feel that the product is actively helping them explain what just happened on screen and where the viewer should look next.
 
 Success signals:
 
 - Users keep the default auto-focus behavior instead of turning it off
-- Shared recordings are easier to follow without manual editing
+- Product demos are easier to follow without manual editing
+- Bug reports are easier to understand on first watch
 - Repeat usage increases for demos and bug reports
 
-## Phase 3: Recording Templates Instead of Editing
+## Phase 3: Demo Presets
 
-Goal: let users define the final presentation style before they record.
+Goal: let users choose a recording mode that matches the software workflow they need to explain.
 
 Key outcomes:
 
+- Recording presets for product walkthroughs
+- Recording presets for bug reproduction
 - Export aspect ratio presets such as 16:9, 9:16, and 1:1
-- Background presets such as clean fill, gradient, framed, or padded canvas
-- Cursor style presets
-- Focus style presets
-- Team or brand presets for colors and framing
+- Cursor treatment presets
+- Focus behavior presets
+- Simple background and framing presets that support clearer viewing
 
 This phase should remain preset-driven, not timeline-driven.
 
-The user should choose a recording mode or presentation template, not edit individual shots after the fact.
+The user should choose a recording mode before capture, not edit individual shots after the fact.
 
 Success signals:
 
 - High usage of presets
 - Faster time from recording to sharing
-- Better consistency across repeated team recordings
+- Better consistency across repeated demo and bug-report recordings
 
-## Phase 4: Professional Workflow Outputs
+## Phase 4: Handoff Outputs
 
-Goal: serve users who will still finish in professional tools, without turning Cursorful into one.
+Goal: produce outputs that are easy to share immediately or hand off to professional tools without turning Cursorful into an editor.
 
 Key outcomes:
 
@@ -149,7 +165,7 @@ Key outcomes:
 - Structured output that is easier to hand off downstream
 - Optional separate overlays or supporting data for advanced workflows
 
-This phase matters because "no editing" is only credible if the product still respects professional production pipelines.
+This phase matters because "no editing" is only credible if the product still gives users good source material and clean downstream handoff.
 
 Success signals:
 
@@ -159,10 +175,10 @@ Success signals:
 ## Version Direction
 
 - v0.4: stabilize recording and unify core flows across current entry points
-- v0.5: connect auto-zoom logic to actual preview and export behavior
-- v0.6: ship recording presets for aspect ratio, focus style, background, and cursor treatment
-- v0.7: improve export quality and add metadata-oriented output for professional workflows
-- v1.0: complete the "automatic presentation recorder" positioning with polished auto-focus behavior and dependable export
+- v0.5: connect auto-zoom logic to actual preview and export behavior for demos and bug reports
+- v0.6: ship demo-focused presets for aspect ratio, focus style, cursor treatment, and framing
+- v0.7: improve export quality and add metadata-oriented output for downstream workflows
+- v1.0: complete the "product demo and bug reproduction recorder" positioning with polished workflow focus and dependable export
 
 ## Strategic Risks
 
@@ -174,12 +190,12 @@ Success signals:
 ## Near-Term Priorities
 
 1. Strengthen recording reliability.
-2. Make automatic focus visible and trustworthy.
-3. Turn presets into the main customization layer.
+2. Make automatic focus visible, trustworthy, and useful for software workflows.
+3. Turn presets into scenario-based recording modes.
 4. Improve export quality and downstream compatibility.
 
 ## Positioning Summary
 
-Cursorful should be built as an automatic presentation recorder for demos, walkthroughs, and bug reproductions.
+Cursorful should be built as a browser-first recorder for product demos and bug reproduction, with automatic focus that makes software workflows easier to follow.
 
 It should help users create clearer recordings without becoming an editor, and it should produce better source material for professionals who prefer to finish elsewhere.

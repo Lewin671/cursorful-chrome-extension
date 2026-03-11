@@ -1,8 +1,8 @@
 # Cursorful Core Replica
 
-面向 Chrome 的自动演示录屏扩展。
+一款面向产品演示和 Bug 复现的浏览器录屏工具。
 
-Cursorful 用来录制产品演示、功能讲解和 bug 复现。它的目标不是做视频编辑器，而是在录制阶段通过鼠标轨迹、点击采集和自动聚焦能力，让视频从一开始就更清楚。
+Cursorful 用来录制产品演示、功能讲解和 Bug 复现。它的目标不是做视频编辑器，而是在录制阶段通过鼠标轨迹、点击采集和自动聚焦能力，让软件操作流程更容易看懂。
 
 ## 当前能力
 
@@ -18,8 +18,8 @@ Cursorful 不做时间线编辑。
 
 重点是：
 
-- 录制更稳定
-- 自动强调重点区域
+- 更稳定地录制软件操作流程
+- 自动强调用户刚刚操作的重点区域
 - 导出更适合直接分享或交给专业人员后期处理的素材
 
 路线图见 [doc/product-roadmap.md](/Users/qingyingliu/Code/cursorful-chrome-extension/doc/product-roadmap.md)。

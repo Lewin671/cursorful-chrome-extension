@@ -1,8 +1,8 @@
 # Cursorful Core Replica
 
-Automatic presentation recorder for Chrome.
+Browser-first recorder for product demos and bug reproduction.
 
-Cursorful is a Manifest V3 Chrome extension for recording product demos, walkthroughs, and bug reproductions. It is designed to make recordings clearer from the start with cursor tracking and auto-focus primitives, without becoming a video editor.
+Cursorful is a Manifest V3 Chrome extension for recording product demos, walkthroughs, and bug reproductions. Its job is to make software workflows easier to follow with cursor tracking and automatic focus, without becoming a video editor.
 
 ## Features
 
@@ -18,9 +18,9 @@ Cursorful is not planned as a timeline editor.
 
 The focus is:
 
-- record reliably
-- emphasize what matters automatically
-- export better source material for sharing or downstream professional editing
+- record software workflows reliably
+- automatically focus attention on the key action
+- export cleaner source material for sharing or downstream professional editing
 
 See the roadmap in [doc/product-roadmap.md](/Users/qingyingliu/Code/cursorful-chrome-extension/doc/product-roadmap.md).
 
