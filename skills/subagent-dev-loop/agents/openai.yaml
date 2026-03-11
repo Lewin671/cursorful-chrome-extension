@@ -1,0 +1,4 @@
+interface:
+  display_name: "Subagent Dev Loop"
+  short_description: "Code with 1 worker and 3 reviewers"
+  default_prompt: "Use $subagent-dev-loop to implement with one coding subagent, three review subagents, and iterative convergence."
