@@ -1,61 +1,60 @@
 # Cursorful Core Replica
 
-Chrome Extension (Manifest V3) screen recorder with auto-zoom, timeline editing, and local video export.
+Automatic presentation recorder for Chrome.
+
+Cursorful is a Manifest V3 Chrome extension for recording product demos, walkthroughs, and bug reproductions. It is designed to make recordings clearer from the start with cursor tracking and auto-focus primitives, without becoming a video editor.
+
+## Features
+
+- Browser-based screen recording
+- Cursor trail and click capture
+- Auto-zoom core logic
+- Local preview and download
+- Zero dependencies and no build step
+
+## Product Direction
+
+Cursorful is not planned as a timeline editor.
+
+The focus is:
+
+- record reliably
+- emphasize what matters automatically
+- export better source material for sharing or downstream professional editing
+
+See the roadmap in [doc/product-roadmap.md](/Users/qingyingliu/Code/cursorful-chrome-extension/doc/product-roadmap.md).
+
+Chinese version: [README.zh-CN.md](/Users/qingyingliu/Code/cursorful-chrome-extension/README.zh-CN.md)
 
 ## Development
 
-- Run tests:
+Run tests:
 
-  `npm test`
+```bash
+npm test
+```
 
-- Package extension for release:
+Package the extension:
 
-  `npm run package`
+```bash
+npm run package
+```
 
-The packaging script reads `extension/manifest.json` and generates a zip under `dist/`, for example:
+## Load in Chrome
 
-`dist/cursorful-core-replica-v0.1.0.zip`
+Load the unpacked extension from the `extension/` directory.
 
-## Publish to Chrome Web Store
+Example:
 
-### 1) Prepare release
+```bash
+google-chrome --no-first-run --disable-default-apps --no-default-browser-check --load-extension=/workspace/extension/
+```
 
-1. Update `version` in `extension/manifest.json` (must be higher than last published version).
-2. Run tests:
-   - `npm test`
-3. Build release zip:
-   - `npm run package`
-4. Verify zip structure (optional but recommended):
-   - `unzip -l dist/*.zip`
-   - Ensure `manifest.json` is at the root of the zip.
+The popup opens `studio.html`. The extension also includes a side panel flow.
 
-### 2) Upload in Developer Dashboard
+## Release
 
-1. Open Chrome Web Store Developer Dashboard.
-2. Enter your extension item.
-3. Go to **Package** / **Upload new package**.
-4. Upload the zip file generated in `dist/`.
-
-### 3) Complete store listing checks
-
-Before submitting review, confirm:
-
-- Extension description and screenshots are up to date.
-- Privacy policy URL is valid (if required by permissions/features).
-- Data usage declarations are accurate.
-- Host permissions and optional permissions match actual behavior.
-
-### 4) Submit for review
-
-1. Save draft changes.
-2. Submit for review in the Developer Dashboard.
-3. Wait for review result and publish once approved.
-
-## Release checklist (quick copy)
-
-- [ ] Bump `extension/manifest.json` version
-- [ ] `npm test` passed
-- [ ] `npm run package` generated zip in `dist/`
-- [ ] Upload zip to Chrome Web Store Developer Dashboard
-- [ ] Verify store listing assets and policy info
-- [ ] Submit review
+1. Update `extension/manifest.json` version.
+2. Run `npm test`.
+3. Run `npm run package`.
+4. Upload the generated zip from `dist/` to Chrome Web Store Developer Dashboard.
