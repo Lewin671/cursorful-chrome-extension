@@ -1,5 +1,8 @@
 # Cursorful Core Replica
 
+[![CI](https://github.com/Lewin671/cursorful-chrome-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/Lewin671/cursorful-chrome-extension/actions/workflows/ci.yml)
+[![Release](https://github.com/Lewin671/cursorful-chrome-extension/actions/workflows/release.yml/badge.svg)](https://github.com/Lewin671/cursorful-chrome-extension/actions/workflows/release.yml)
+
 Browser-first recorder for product demos and bug reproduction.
 
 Cursorful is a Manifest V3 Chrome extension for recording product demos, walkthroughs, and bug reproductions. Its job is to make software workflows easier to follow with cursor tracking and automatic focus, without becoming a video editor.
@@ -28,6 +31,12 @@ Chinese version: [README.zh-CN.md](/Users/qingyingliu/Code/cursorful-chrome-exte
 
 ## Development
 
+Install local tooling:
+
+```bash
+npm install
+```
+
 Run tests:
 
 ```bash
@@ -38,6 +47,12 @@ Package the extension:
 
 ```bash
 npm run package
+```
+
+Run the full local verification:
+
+```bash
+npm run verify
 ```
 
 ## Load in Chrome
@@ -52,9 +67,38 @@ google-chrome --no-first-run --disable-default-apps --no-default-browser-check -
 
 The popup opens `studio.html`. The extension also includes a side panel flow.
 
-## Release
+## Download a Package
+
+Packaged extension zips are published as GitHub Release assets.
+
+1. Open the repository Releases page.
+2. Download `cursorful-vX.Y.Z.zip` from the latest release.
+3. Unzip it locally.
+4. In Chrome, open `chrome://extensions`, enable Developer mode, and load the
+   unpacked unzipped directory.
+
+## Release Process
 
 1. Update `extension/manifest.json` version.
 2. Run `npm test`.
 3. Run `npm run package`.
-4. Upload the generated zip from `dist/` to Chrome Web Store Developer Dashboard.
+4. Commit the change.
+5. Create and push a matching `vX.Y.Z` tag.
+
+Example:
+
+```bash
+git tag v0.3.1
+git push origin v0.3.1
+```
+
+The release workflow validates that the tag matches `extension/manifest.json`,
+creates a GitHub Release, uploads the extension zip, and includes `SHA256SUMS`.
+
+Chrome Web Store publishing is still manual from the generated zip.
+
+## Project Governance
+
+- Contributions: [CONTRIBUTING.md](/Users/qingyingliu/Code/cursorful-chrome-extension/CONTRIBUTING.md)
+- Security reports: [SECURITY.md](/Users/qingyingliu/Code/cursorful-chrome-extension/SECURITY.md)
+- License: [MIT](/Users/qingyingliu/Code/cursorful-chrome-extension/LICENSE)

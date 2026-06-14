@@ -1,18 +1,19 @@
-name: Release package
+name: Release
 
 on:
   push:
-    branches:
-      - main
-  release:
-    types:
-      - published
+    tags:
+      - "v*"
 
 permissions:
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  build:
+  package-and-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,25 +30,24 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build release package
+      - name: Build extension package
         run: npm run package
 
-      - name: Get package filename
-        if: github.event_name == 'push'
-        id: get-filename
-        run: echo "filename=$(ls dist/*.zip | xargs -n1 basename)" >> $GITHUB_OUTPUT
+      - name: Validate release tag
+        run: |
+          MANIFEST_VERSION="$(node -e 'const fs = require("node:fs"); const manifest = JSON.parse(fs.readFileSync("extension/manifest.json", "utf8")); process.stdout.write(manifest.version);')"
+          if [ "${GITHUB_REF_NAME}" != "v${MANIFEST_VERSION}" ]; then
+            echo "Release tag ${GITHUB_REF_NAME} does not match extension manifest version v${MANIFEST_VERSION}." >&2
+            exit 1
+          fi
 
-      - name: Upload preview artifact
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.get-filename.outputs.filename }}
-          path: dist/*.zip
-          retention-days: 30
+      - name: Generate checksums
+        run: sha256sum dist/*.zip > dist/SHA256SUMS
 
-      - name: Upload package to release
-        if: github.event_name == 'release'
+      - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$RELEASE_TAG" dist/*.zip --clobber
+        run: |
+          gh release create "${GITHUB_REF_NAME}" dist/*.zip dist/SHA256SUMS \
+            --title "Cursorful ${GITHUB_REF_NAME}" \
+            --generate-notes

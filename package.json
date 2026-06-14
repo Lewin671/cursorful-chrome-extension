@@ -1,13 +1,20 @@
 {
   "name": "cursorful-core-replica",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
+  "description": "Manifest V3 Chrome extension for browser-first screen recording with cursor capture and auto-zoom.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lewin671/cursorful-chrome-extension.git"
+  },
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
     "test": "node --test",
-    "package": "bash ./scripts/package-extension.sh"
+    "package": "bash ./scripts/package-extension.sh",
+    "verify": "npm test && npm run package"
   }
 }
